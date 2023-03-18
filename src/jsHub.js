@@ -1,6 +1,6 @@
 /**
  *   @author: Fibo <thephibonacci@gmail.com>
- *   @version 0.0.1
+ *   @version 1.0.0
  *   @copyright thephibonacci (c) 2023 - all right reserved
  *
  *   @return {object}
@@ -262,7 +262,48 @@ class jsHub {
         });
         return this;
     }
+slideRight(duration) {
+    this.#selector.forEach((element) => {
+        let width = element.scrollWidth;
+        element.style.width = "0";
+        element.style.display = "block";
+        let start = performance.now();
 
+        function step(timestamp) {
+            let progress = (timestamp - start) / duration;
+            element.style.width = Math.min(width * progress, width) + "px";
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                element.style.width = "";
+            }
+        }
+
+        window.requestAnimationFrame(step);
+    });
+    return this;
+}
+
+slideLeft(duration) {
+    this.#selector.forEach((element) => {
+        let width = element.scrollWidth;
+        let start = performance.now();
+
+        function step(timestamp) {
+            let progress = (timestamp - start) / duration;
+            element.style.width = Math.max(width - width * progress, 0) + "px";
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                element.style.display = "none";
+                element.style.width = "";
+            }
+        }
+
+        window.requestAnimationFrame(step);
+    });
+    return this;
+}
     trigger(eventName) {
         this.#selector.forEach((element) => {
             let event = new Event(eventName);
