@@ -11,7 +11,11 @@ class jsHub {
 
     constructor(selector = null) {
         if (selector) {
-            this.#selector = document.querySelectorAll(selector);
+            if (typeof selector === "object") {
+                this.#selector = selector;
+            } else {
+                this.#selector = document.querySelectorAll(selector);
+            }
         } else {
             this.#selector = {};
         }
@@ -20,6 +24,14 @@ class jsHub {
             this.#readyHandlers.forEach((handler) => handler());
         });
         return this;
+    }
+
+    get() {
+        return this.#selector[0];
+    }
+
+    getAll() {
+        return this.#selector;
     }
 
     css(cssText) {
@@ -262,48 +274,50 @@ class jsHub {
         });
         return this;
     }
-slideRight(duration) {
-    this.#selector.forEach((element) => {
-        let width = element.scrollWidth;
-        element.style.width = "0";
-        element.style.display = "block";
-        let start = performance.now();
 
-        function step(timestamp) {
-            let progress = (timestamp - start) / duration;
-            element.style.width = Math.min(width * progress, width) + "px";
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                element.style.width = "";
+    slideRight(duration) {
+        this.#selector.forEach((element) => {
+            let width = element.scrollWidth;
+            element.style.width = "0";
+            element.style.display = "block";
+            let start = performance.now();
+
+            function step(timestamp) {
+                let progress = (timestamp - start) / duration;
+                element.style.width = Math.min(width * progress, width) + "px";
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    element.style.width = "";
+                }
             }
-        }
 
-        window.requestAnimationFrame(step);
-    });
-    return this;
-}
+            window.requestAnimationFrame(step);
+        });
+        return this;
+    }
 
-slideLeft(duration) {
-    this.#selector.forEach((element) => {
-        let width = element.scrollWidth;
-        let start = performance.now();
+    slideLeft(duration) {
+        this.#selector.forEach((element) => {
+            let width = element.scrollWidth;
+            let start = performance.now();
 
-        function step(timestamp) {
-            let progress = (timestamp - start) / duration;
-            element.style.width = Math.max(width - width * progress, 0) + "px";
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                element.style.display = "none";
-                element.style.width = "";
+            function step(timestamp) {
+                let progress = (timestamp - start) / duration;
+                element.style.width = Math.max(width - width * progress, 0) + "px";
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    element.style.display = "none";
+                    element.style.width = "";
+                }
             }
-        }
 
-        window.requestAnimationFrame(step);
-    });
-    return this;
-}
+            window.requestAnimationFrame(step);
+        });
+        return this;
+    }
+
     trigger(eventName) {
         this.#selector.forEach((element) => {
             let event = new Event(eventName);
@@ -516,4 +530,45 @@ function warn(...value) {
     value.forEach((val) => {
         console.warn(val);
     });
+}
+
+function Id(id) {
+    return document.getElementById(id);
+}
+
+function Class(className, first = false) {
+    if (first) {
+        return document.getElementsByClassName(className)[0];
+    } else {
+        return document.getElementsByClassName(className);
+    }
+}
+
+function Name(name) {
+    return document.getElementsByName(name)
+}
+
+function Tag(tagName) {
+    return document.getElementsByTagName(tagName)
+}
+
+function setCookie(name, value, expire) {
+    date = new Date();
+    date.setTime(date.getTime() + (expire * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
+function getCookie(name) {
+    name = name + "=";
+    let data = document.cookie.split(';'), value;
+    for (let i = 0; i < data.length; i++) {
+        value = data[i];
+        while (value.charAt(0) == ' ') {
+            cvalue = value.substring(1);
+        }
+        if (value.indexOf(name) == 0) {
+            return value.substring(name.length, value.length);
+        }
+    }
+    return "";
 }
