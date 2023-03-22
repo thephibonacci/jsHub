@@ -1,6 +1,6 @@
 /**
  *   @author: Fibo <thephibonacci@gmail.com>
- *   @version 1.0.0
+ *   @version 1.3.0
  *   @copyright thephibonacci (c) 2023 - all right reserved
  *
  *   @return {object}
@@ -146,11 +146,11 @@ class jsHub {
     }
 
     width() {
-        return this.#selector[0].offsetWidth;
+        return window.getComputedStyle(this.#selector[0]).width;
     }
 
     height() {
-        return this.#selector[0].offsetHeight;
+        return window.getComputedStyle(this.#selector[0]).height;
     }
 
     append(content) {
